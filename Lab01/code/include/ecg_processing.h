@@ -20,14 +20,6 @@
  * ================================ */
 
 /**
- * @brief Contexte interne de traitement ECG (opaque).
- *
- * L'étudiant est libre de choisir les structures internes (buffers, filtres, états, etc.).
- */
-typedef struct ECG_Context ECG_Context;
-
-
-/**
  * @brief Paramètres d'analyse ECG.
  *
  * Cette structure permet de configurer l'analyse ECG avant son exécution.
@@ -36,15 +28,24 @@ typedef struct
 {
     int sampling_rate_hz;   /**< Fréquence d'échantillonnage (Hz). */
     int leads;              /**< Nombre de dérivations disponibles. */
-
+    
     double gain; /**< Gain de l'amplification (optionnel). */
-
+    
     /*ADD NECESSARY PARAMETERS*/
-
+    
     double r_threshold_hint; /**< Seuil initial pour la détection des pics R (optionnel). */
-
+    
 } ECG_Params;
 
+/**
+ * @brief Contexte interne de traitement ECG (opaque).
+ *
+ * L'étudiant est libre de choisir les structures internes (buffers, filtres, états, etc.).
+ */
+typedef struct ECG_Context{
+    ECG_Params params; /* Paramètres d'analyse (copie de ceux fournis à la création) */
+
+} ECG_Context;
 
 /**
  * @brief Code de retour standard pour l'analyse ECG.
@@ -107,3 +108,4 @@ ECG_Status ecg_analyze(
 
 
 /* AJOUTER N'IMPORTE QU'ELLE FONCTION UTILE */
+#endif /* ECG_PROCESSING_H */
