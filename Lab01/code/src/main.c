@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "csv_reader.h"
 #include "ecg_processing.h"
@@ -9,13 +10,25 @@
 int main(int argc, char *argv[])
 {
     if (argc < 3) {
-        fprintf(stderr, "Usage: %s <input_csv> <output_json>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <input_csv> <output_json> [n_samples]\n", argv[0]);
         return 1;
     }
 
     if (read_csv(argv[1]) != 0) {
         fprintf(stderr, "Erreur lecture CSV.\n");
         return 2;
+    }
+
+    // Permet de choisir combien d'échantillons analyser (optionnel, sinon tout le signal)
+    size_t n_to_process = (size_t)sample_count;
+    if (argc >= 4) {
+        unsigned long tmp = strtoul(argv[3], NULL, 10);
+        if (tmp > 0) {
+            n_to_process = (size_t)tmp;
+        }
+        if (n_to_process > (size_t)sample_count) {
+            n_to_process = (size_t)sample_count;
+        }
     }
 
     ECG_Peaks peaks;
@@ -48,7 +61,7 @@ int main(int argc, char *argv[])
     ECG_Status st = ecg_analyze(
         ctx,
         ecg_data[lead_index],
-        (size_t)sample_count,
+        n_to_process,
         lead_index,
         &peaks,
         &intervals
