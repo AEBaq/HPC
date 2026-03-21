@@ -1,22 +1,12 @@
 # HPC, Laboratoire n°1 : Signaux ECG
 **Étudiante :** Nox  
-**Date :** 2026-03-19  
-**Fichier utilisé pour les mesures :** `80bpm0.csv`
+**Date :** 19 mars 2026  
 
 ## Choix d'implémentation
 N'ayant pas de réelle connaissance dans le traitement de signaux ECG, j'ai préféré suivre les références fournies dans l’énoncé, en m’inspirant du principe général de l’algorithme de Pan–Tompkins (sans chercher à en faire une reproduction exacte).
 
-- **Prétraitement** : application d’un gain et suppression de la composante continue
-- **Filtrage passe-bande approximatif** : réalisé avec des moyennes glissantes (passe-bas puis passe-haut par soustraction d’une moyenne glissante). J’ai choisi cette solution car elle est l'une des plus simple à mettre en place.
-- **Dérivée puis mise au carré** : pour mettre en évidence les variations rapides liées au complexe QRS.
-- **Intégration par fenêtre glissante (MWI)** : pour lisser l’énergie du signal transformé.
-- **Détection des pics R** : recherche de maxima locaux au-dessus d’un **seuil** (calculé automatiquement) et application d’une **période réfractaire** pour éviter de détecter plusieurs pics trop proches.
-
-Les **intervalles RR** sont ensuite calculés à partir des indices des pics R et convertis en secondes avec la fréquence d’échantillonnage.
-
 ## Résultats
-Cette section reprend uniquement les manipulations que j’ai réellement effectuées après compilation, telles qu’elles sont notées dans `simple_measure.md`.
-
+Voici les diverses sorties que j'ai pu observer
 ### Exécution (génération de `out.json`)
 Commande :
 ```bash
