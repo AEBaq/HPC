@@ -1,5 +1,6 @@
 # HPC, Laboratoire n°1 : Signaux ECG
 **Étudiante :** Emily Baquerizo
+
 **Date :** 3 mars 2026
 
 ## Choix d'implémentation
