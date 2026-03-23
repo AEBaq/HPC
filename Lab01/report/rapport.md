@@ -5,8 +5,6 @@
 ## Choix d'implémentation
 N'ayant pas de réelle connaissance dans le traitement de signaux ECG, j'ai préféré suivre les références fournies dans l’énoncé, en m’inspirant du principe général de l’algorithme de Pan–Tompkins (sans chercher à en faire une reproduction exacte) : prétraitement, filtrage passe-bande approximatif, dérivée puis mise au carré, intégration par fenetre glissante et détection des pics.
 
-Les **intervalles RR** sont ensuite calculés à partir des indices des pics R et convertis en secondes avec la fréquence d’échantillonnage.
-
 Afin de pouvoir exécuter avec un nombre différent d'échantillon, le main.cpp a légèrement été modifié pour recevoir, si désiré, un nombre d'échantillon.
 
 ## Résultats
