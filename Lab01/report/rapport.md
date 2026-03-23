@@ -1,11 +1,11 @@
 # HPC, Laboratoire n°1 : Signaux ECG
-**Étudiante :** Nox  
+**Étudiante :** Emily Baquerizo
 **Date :** 3 mars 2026
 
 ## Choix d'implémentation
 N'ayant pas de réelle connaissance dans le traitement de signaux ECG, j'ai préféré suivre les références fournies dans l’énoncé, en m’inspirant du principe général de l’algorithme de Pan–Tompkins (sans chercher à en faire une reproduction exacte) : prétraitement, filtrage passe-bande approximatif, dérivée puis mise au carré, intégration par fenetre glissante et détection des pics.
 
-Afin de pouvoir exécuter avec un nombre différent d'échantillon, le main.cpp a légèrement été modifié pour recevoir, si désiré, un nombre d'échantillon.
+Afin de pouvoir exécuter avec un nombre différent d'échantillon, le main.c a légèrement été modifié pour recevoir, si désiré, un nombre d'échantillon.
 
 ## Résultats
 Cette section reprend les manipulations effectuées afin d'obtenir les résultats.
@@ -87,9 +87,16 @@ Les mesures montrent un temps moyen de ~53–55 ms sur `80bpm0.csv`, ce qui est 
 Les résultats avec différentes valeurs de N (1000 à 10000) montre que le temps varie très peu. Une hypothèse pourrait être que la pluaprt du temps est utilisé par des opérations qui ne dépendent pas vraiment de N, comme la lecture du CSV, les allocations mémoires ou l'écriture du json. Le traitement du signal n'est donc qu'une partie minime du temps total.
 
 ### Analyse des résultats (pics R)
-Le programme détecte 22 pics R sur le fichier testé, et calcule 21 R. Le seuil est calculé automatiquement (`threshold auto = 0.610762`).  
-À ce stade, je me suis concentrée sur l’exécution et les mesures de performance, sans faire d’étape supplémentaire de validation du contenu du JSON ni de visualisation du signal.
+Le programme détecte 22 pics R sur le fichier testé, et calcule 21 RR. Le seuil est calculé automatiquement (`threshold auto = 0.610762`).  
+Voici le résultat du json :
 
-Pour améliorer la validation dans une prochaine étape, il serait pertinent de :
-- relire `out.json` et calculer la fréquence cardiaque moyenne à partir des RR,
-- tracer le signal ECG et superposer les pics R pour vérifier visuellement la qualité de la détection.
+```json
+{
+  "peaks": {
+    "R": [1097, 1255, 1471, 1630, 1839, 2005, 2214, 2381, 2598, 2965, 3348, 3724, 4099, 4466, 4850, 5217, 5600, 5977, 6351, 6718, 7101, 7469]
+  },
+  "intervals": {
+    "RR": [0.32, 0.43, 0.32, 0.42, 0.33, 0.42, 0.33, 0.43, 0.73, 0.77, 0.75, 0.75, 0.73, 0.77, 0.73, 0.77, 0.75, 0.75, 0.73, 0.77, 0.74]
+  }
+}
+```
