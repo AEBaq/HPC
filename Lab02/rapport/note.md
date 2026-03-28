@@ -63,3 +63,42 @@ Free memory:		14178.3 MB
 Total memory:		15674.5 MB
 --------------------------------------------------------------------------------
 ```
+
+` likwid-bench -t peakflops -W N:30kB:1` 
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-bench -t peakflops -W N:30kB:1
+Allocate: Process running on hwthread 0 (Domain N) - Vector length 3750/30000 Offset 0 Alignment 512
+--------------------------------------------------------------------------------
+LIKWID MICRO BENCHMARK
+Test: peakflops
+--------------------------------------------------------------------------------
+Using 1 work groups
+Using 1 threads
+--------------------------------------------------------------------------------
+Running without Marker API. Activate Marker API with -m on commandline.
+--------------------------------------------------------------------------------
+Group: 0 Thread 0 Global Thread 0 running on hwthread 0 - Vector length 3750 Offset 0
+--------------------------------------------------------------------------------
+Cycles:			4122722646
+CPU Clock:		2600000000
+Cycle Clock:		2600000000
+Time:			1.585663e+00 sec
+Iterations:		262144
+Iterations per thread:	262144
+Inner loop executions:	3750
+Size (Byte):		30000
+Size per thread:	30000
+Number of Flops:	15728640000
+MFlops/s:		9919.29
+Data volume (Byte):	7864320000
+MByte/s:		4959.64
+Cycles per update:	4.193850
+Cycles per cacheline:	33.550803
+Loads per update:	1
+Stores per update:	0
+Load bytes per element:	8
+Store bytes per elem.:	0
+Instructions:		19660800032
+UOPs:			18677760000
+--------------------------------------------------------------------------------
+```
