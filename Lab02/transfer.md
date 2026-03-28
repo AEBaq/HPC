@@ -1,16 +1,38 @@
 ```bash
-SHORT HPC lab02
-
-EVENTSET
-MBOX0C1 DRAM_READS
-FIXC0 INSTR_RETIRED_ANY
-PMC1  BR_INST_RETIRED_ALL_BRANCHES
-
-METRICS
-Runtime (RDTSC) [s] time
-Nombre données lues [B] MBOX0C1*64
-Intensité operationnelle totale [Instr/byte] FIXC0/(MBOX0C1)
-Nombre d'instructions/s [MInstr/s] 1.0E-06*(FIXC0/time)
-Branch rate PMC1/FIXC0
+reds@2509PC09:~/Desktop/HPC-main/Lab02/script$ likwid-bench -t load -W N:2GB:1
+Allocate: Process running on hwthread 0 (Domain N) - Vector length 250000000/2000000000 Offset 0 Alignment 512
+--------------------------------------------------------------------------------
+LIKWID MICRO BENCHMARK
+Test: load
+--------------------------------------------------------------------------------
+Using 1 work groups
+Using 1 threads
+--------------------------------------------------------------------------------
+Running without Marker API. Activate Marker API with -m on commandline.
+--------------------------------------------------------------------------------
+Group: 0 Thread 0 Global Thread 0 running on hwthread 0 - Vector length 250000000 Offset 0
+--------------------------------------------------------------------------------
+Cycles:			4098158614
+CPU Clock:		2600000000
+Cycle Clock:		2600000000
+Time:			1.576215e+00 sec
+Iterations:		16
+Iterations per thread:	16
+Inner loop executions:	31250000
+Size (Byte):		2000000000
+Size per thread:	2000000000
+Number of Flops:	0
+MFlops/s:		0.00
+Data volume (Byte):	32000000000
+MByte/s:		20301.80
+Cycles per update:	1.024540
+Cycles per cacheline:	8.196317
+Loads per update:	1
+Stores per update:	0
+Load bytes per element:	8
+Store bytes per elem.:	0
+Instructions:		5500000016
+UOPs:			5000000000
+--------------------------------------------------------------------------------
 
 ```
