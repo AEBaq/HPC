@@ -1,4 +1,4 @@
-SHORT HPC Lab02
+SHORT HPC - Lab02
 
 EVENTSET
 PMC0 FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE
@@ -8,12 +8,10 @@ PMC3 MEM_INST_RETIRED_ALL_STORES
 
 METRICS
 # Opérations flottantes
-FLOPs_DP = PMC0*2 + PMC1*1
+FLOPs_DP = PMC0 * 2 + PMC1 * 1
 
 # Accès mémoire (en bytes)
-Loads = PMC2
-Stores = PMC3
-DRAM_Bytes = (Loads + Stores) * 8
+DRAM_Bytes = (PMC2 + PMC3) * 8
 
 # Timing et performance
 Runtime = time
@@ -26,7 +24,7 @@ Perf = (FLOPs_DP / Runtime) / 1e9
 BW_eff = (DRAM_Bytes / Runtime) / 1e9
 
 LONG
-Groupe de performance pour analyse Roofline (Lab 02)
-Mesure FP DP scalaire et vectoriel (SSE 128-bit)
+Groupe de performance pour analyse Roofline pour lab02
+Mesure FP DP scalaire et vectoriel
 Accès mémoire architecturaux (loads/stores comptés)
 Intensité arithmétique, performance et bande passante effective
