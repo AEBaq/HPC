@@ -1098,8 +1098,12 @@ Region colmajor, Group 1: HPC
 ```
 # Calcul finaux 
 ## Maxperf et Maxband
-9919.29
-20620.22
+9919.29 et 20620.22
+
+* FLOPs_DP = (PMC0 × 2) + (PMC1 × 1)
+* DRAM_Bytes = (PMC2 + PMC3) × 8
+* AI = FLOPs_DP / DRAM_Bytes
+* Perf = (FLOPs_DP / Runtime) / 1e9  [en MFLOP/s]
 
 ## Cas 1 : hpc_stream (n=50000000)
 * FLOPs = (0*2) + (150000000*1) = 150M FLOPs
@@ -1149,3 +1153,5 @@ Region colmajor, Group 1: HPC
 * AI = 16777.22 / 1480.6 = 11.33 FLOP/Byte
 * Perf = 16777.22 / 0.179456 = 93.5 MFLOP/s
 * 11.33 93.5 colmajor
+## Résumé 
+voir photo discord
