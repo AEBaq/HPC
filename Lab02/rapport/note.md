@@ -63,6 +63,8 @@ Free memory:		14178.3 MB
 Total memory:		15674.5 MB
 --------------------------------------------------------------------------------
 ```
+# Mesure pic de calcul (Maxperf)
+Résultat de maxperf en MFLOP/s
 
 ` likwid-bench -t peakflops -W N:30kB:1` 
 ```bash
@@ -102,6 +104,8 @@ Instructions:		19660800032
 UOPs:			18677760000
 --------------------------------------------------------------------------------
 ```
+# Mesure bande passante (maxband)
+Résultat de maxband en MB/s
 
 `likwid-bench -t load -W N:2GB:1`
 ```bash
@@ -152,6 +156,7 @@ Group name	Description
 ROOFLINE	Roofline (DP) - FLOPs + memory proxy (LLC misses) for Meteor Lake P-core
      HPC	HPC - Lab02
 ```
+# Etude des cas
 
 ## Cas 1 : 
 `likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stream 50000000`
