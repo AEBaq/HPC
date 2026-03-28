@@ -1096,3 +1096,56 @@ Region colmajor, Group 1: HPC
 | FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
 +------------------------------+------------+
 ```
+# Calcul finaux 
+## Maxperf et Maxband
+9919.29
+20620.22
+
+## Cas 1 : hpc_stream (n=50000000)
+* FLOPs = (0*2) + (150000000*1) = 150M FLOPs
+* DRAM = (650002100 + 200001000) * 8 = 6800.0 MB
+* AI = 150 / 6800 = 0.0221 FLOP/Byte
+* Perf = 150 / 0.084135 = 1783 MFLOP/s
+* 0.0221 1783 hpc_stream
+
+## Cas 2 : hpc_compute (n=20000000, iters=200)
+* FLOPs = (0*2) + (24080000000*1) = 24080M FLOPs
+* DRAM = (48500010000 + 16280000000) * 8 = 518240.0 MB
+* AI = 24080 / 518240 = 0.0465 FLOP/Byte
+* Perf = 24080 / 28.545460 = 843 MFLOP/s
+* 0.0465 843 hpc_compute200
+
+## Cas 3.1 : hpc_stride 2 (n=50000000, stride=2)
+* FLOPs = (0*2) + (150000000*1) = 150M FLOPs
+* DRAM = (800002100 + 250001000) * 8 = 8400.0 MB
+* AI = 150 / 8400 = 0.0179 FLOP/Byte
+* Perf = 150 / 0.114608 = 1308 MFLOP/s
+* 0.0179 1308 hpc_stride2
+
+## Cas 3.2 : hpc_stride 16 (n=50000000, stride=16)
+* FLOPs = (0*2) + (150000000*1) = 150M FLOPs
+* DRAM = (800002200 + 250001000) * 8 = 8400.0 MB
+* AI = 150 / 8400 = 0.0179 FLOP/Byte
+* Perf = 150 / 0.594 = 252 MFLOP/s
+* 0.0179 252 hpc_stride16
+
+## Cas 3.3 : hpc_stride 64 (n=50000000, stride=64)
+* FLOPs = (0*2) + (150000000*1) = 150M FLOPs
+* DRAM = (800002200 + 250001000) * 8 = 8400.0 MB
+* AI = 150 / 8400 = 0.0179 FLOP/Byte
+* Perf = 150 / 0.678691 = 221 MFLOP/s
+* 0.0179 221 hpc_stride64
+
+## Cas 4.1 : rowmajor (N=4096)
+* FLOPs = (0*2) + (16777220*1) = 16777.22M FLOPs
+* DRAM = (134248400 + 33567710) * 8 = 1341.3 MB
+* AI = 16777.22 / 1341.3 = 12.51 FLOP/Byte
+* Perf = 16777.22 / 0.027359 = 613 MFLOP/s
+* 12.51 613 rowmajor
+
+## Cas 4.2 : colmajor (N=4096)
+* FLOPs = (0*2) + (16777220*1) = 16777.22M FLOPs
+* DRAM = (151017500 + 33563620) * 8 = 1480.6 MB
+* AI = 16777.22 / 1480.6 = 11.33 FLOP/Byte
+* Perf = 16777.22 / 0.179456 = 93.5 MFLOP/s
+* 11.33 93.5 colmajor
