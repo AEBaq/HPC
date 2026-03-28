@@ -81,7 +81,7 @@ Group: 0 Thread 0 Global Thread 0 running on hwthread 0 - Vector length 3750 Off
 --------------------------------------------------------------------------------
 Cycles:			4122722646
 CPU Clock:		2600000000
-Cycle Clock:		2600000000
+Cycle Clock:	2600000000
 Time:			1.585663e+00 sec
 Iterations:		262144
 Iterations per thread:	262144
@@ -102,6 +102,47 @@ Instructions:		19660800032
 UOPs:			18677760000
 --------------------------------------------------------------------------------
 ```
+
+`likwid-bench -t load -W N:2GB:1`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-bench -t load -W N:2GB:1
+Allocate: Process running on hwthread 0 (Domain N) - Vector length 250000000/2000000000 Offset 0 Alignment 512
+--------------------------------------------------------------------------------
+LIKWID MICRO BENCHMARK
+Test: load
+--------------------------------------------------------------------------------
+Using 1 work groups
+Using 1 threads
+--------------------------------------------------------------------------------
+Running without Marker API. Activate Marker API with -m on commandline.
+--------------------------------------------------------------------------------
+Group: 0 Thread 0 Global Thread 0 running on hwthread 0 - Vector length 250000000 Offset 0
+--------------------------------------------------------------------------------
+Cycles:			4034873644
+CPU Clock:		2600000000
+Cycle Clock:	2600000000
+Time:			1.551874e+00 sec
+Iterations:		16
+Iterations per thread:	16
+Inner loop executions:	31250000
+Size (Byte):		2000000000
+Size per thread:	2000000000
+Number of Flops:	0
+MFlops/s:		0.00
+Data volume (Byte):	32000000000
+MByte/s:		20620.22
+Cycles per update:	1.008718
+Cycles per cacheline:	8.069747
+Loads per update:	1
+Stores per update:	0
+Load bytes per element:	8
+Store bytes per elem.:	0
+Instructions:		5500000016
+UOPs:			5000000000
+--------------------------------------------------------------------------------
+```
+
+
 `likwid-perfctr -a`
 ```bash
 reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -a
@@ -237,6 +278,811 @@ Region hpc_stream, Group 1: HPC
 |    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |  150000000 |
 |        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  650002100 |
 |        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |  200001000 |
++------------------------------------------+---------+------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+## Cas 2
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_compute 20000000 200`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_compute 20000000 200
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc compute]  n=20000000 iters=200  time=28.243575 s  BW~0.01 GB/s  FLOPs~0.85 GF/s  AI~75.250
+[likwid hpc_compute] done (sink=inf)
+WARN: Skipping region hpc_stride-0 for evaluation.
+WARN: Skipping region rowmajor-0 for evaluation.
+WARN: Skipping region colmajor-0 for evaluation.
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region hpc_compute, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |  28.545460 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+-------------+
+|                   Event                  | Counter |  HWThread 2 |
++------------------------------------------+---------+-------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |           0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  | 24080000000 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  | 48500010000 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  | 16280000000 |
++------------------------------------------+---------+-------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+
+## Cas 3 : 
+### Commande 1
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 2`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 2
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc stride]   n=50000000 stride=2  time=0.112863 s  BW~7.09 GB/s  FLOPs~1.33 GF/s  AI~0.188
+[likwid hpc_stride] done (sink=31722445.21136)
+WARN: Skipping region hpc_compute-0 for evaluation.
+WARN: Skipping region colmajor-0 for evaluation.
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Skipping region rowmajor-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region hpc_stride, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.114608 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 2 |
++------------------------------------------+---------+------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |  150000000 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  800002100 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |  250001000 |
++------------------------------------------+---------+------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+
+### Commande 2
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 16`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 16
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc stride]   n=50000000 stride=16  time=0.606700 s  BW~1.32 GB/s  FLOPs~0.25 GF/s  AI~0.188
+[likwid hpc_stride] done (sink=31372445.17517)
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Skipping region rowmajor-0 for evaluation.
+WARN: Skipping region hpc_compute-0 for evaluation.
+WARN: Skipping region colmajor-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region hpc_stride, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.594000 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 2 |
++------------------------------------------+---------+------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |  150000000 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  800002200 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |  250001000 |
++------------------------------------------+---------+------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+
+### Commande 3
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 64`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stride 50000000 64
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc stride]   n=50000000 stride=64  time=0.687245 s  BW~1.16 GB/s  FLOPs~0.22 GF/s  AI~0.188
+[likwid hpc_stride] done (sink=30172445.06152)
+WARN: Skipping region hpc_compute-0 for evaluation.
+WARN: Skipping region colmajor-0 for evaluation.
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Skipping region rowmajor-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region hpc_stride, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.678691 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 2 |
++------------------------------------------+---------+------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |  150000000 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  800002200 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |  250001000 |
++------------------------------------------+---------+------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+
+## Cas 4
+### Commande 1
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo rowmajor 4096`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo rowmajor 4096
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc rowmajor] N=4096  time=0.027330 s  readBW~4.91 GB/s
+[likwid rowmajor] done (sink=8581545.98400)
+WARN: Skipping region hpc_compute-0 for evaluation.
+WARN: Skipping region hpc_stride-0 for evaluation.
+WARN: Skipping region colmajor-0 for evaluation.
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region rowmajor, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.027359 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 2 |
++------------------------------------------+---------+------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |   16777220 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  134248400 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |   33567710 |
++------------------------------------------+---------+------------+
+
++------------------------------+------------+
+|            Metric            | HWThread 2 |
++------------------------------+------------+
+| FLOPs_DP = PMC0 * 2 + PMC1 * |          1 |
++------------------------------+------------+
+```
+
+### Commande 2
+`likwid-perfctr -C 2 -g HPC -m ./roofline_demo colmajor 4096`
+```bash
+reds@2509PC09:~/Desktop/HPC-main/Lab02/build$ likwid-perfctr -C 2 -g HPC -m ./roofline_demo colmajor 4096
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i5-14500
+CPU type:	Intel AlderLake 14th Gen processor
+CPU clock:	2.60 GHz
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+--------------------------------------------------------------------------------
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE:PMC0'
+      subtoken[0]='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE'
+      subtoken[1]='PMC0'
+[OK]   getIndexAndType counter='PMC0' -> index=3 type=0 key='PMC0'
+[CHK]  checkAccess counter='PMC0' index=3 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE' counter='PMC0' -> limit='PMC' eventId=0xC7 umask=0x4 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC0' limit='PMC' -> 1
+
+[ADD] raw token='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE:PMC1'
+      subtoken[0]='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE'
+      subtoken[1]='PMC1'
+[OK]   getIndexAndType counter='PMC1' -> index=4 type=0 key='PMC1'
+[CHK]  checkAccess counter='PMC1' index=4 requested_type=0 -> checked_type=0
+[OK]   getEvent event='FP_ARITH_INST_RETIRED_SCALAR_DOUBLE' counter='PMC1' -> limit='PMC' eventId=0xC7 umask=0x1 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC1' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_LOADS:PMC2'
+      subtoken[0]='MEM_INST_RETIRED_ALL_LOADS'
+      subtoken[1]='PMC2'
+[OK]   getIndexAndType counter='PMC2' -> index=5 type=0 key='PMC2'
+[CHK]  checkAccess counter='PMC2' index=5 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_LOADS' counter='PMC2' -> limit='PMC' eventId=0xD0 umask=0x81 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC2' limit='PMC' -> 1
+
+[ADD] raw token='MEM_INST_RETIRED_ALL_STORES:PMC3'
+      subtoken[0]='MEM_INST_RETIRED_ALL_STORES'
+      subtoken[1]='PMC3'
+[OK]   getIndexAndType counter='PMC3' -> index=6 type=0 key='PMC3'
+[CHK]  checkAccess counter='PMC3' index=6 requested_type=0 -> checked_type=0
+[OK]   getEvent event='MEM_INST_RETIRED_ALL_STORES' counter='PMC3' -> limit='PMC' eventId=0xD0 umask=0x82 cfgBits=0x0 options=0
+[CHK]  checkCounter counter='PMC3' limit='PMC' -> 1
+
+[SUMMARY]
+valid_events=4 fixed_counters=3 isPerfGroup=1
+regTypeMask1=0x1
+regTypeMask2=0x0
+regTypeMask3=0x0
+regTypeMask4=0x0
+regTypeMask5=0x0
+regTypeMask6=0x0
+regTypeMask7=0x0
+regTypeMask8=0x0
+regTypeMask9=0x0
+cpuid_info.perf_num_fixed_ctr=3 perfmon_numCounters=20 perfmon_numCoreCounters=15
+[calc colmajor] N=4096  time=0.173472 s  readBW~0.77 GB/s
+[likwid colmajor] done (sink=8581545.98399)
+WARN: Skipping region hpc_stream-0 for evaluation.
+WARN: Skipping region rowmajor-0 for evaluation.
+WARN: Skipping region hpc_stride-0 for evaluation.
+WARN: Skipping region hpc_compute-0 for evaluation.
+WARN: Regions are skipped because:
+      - The region was only registered
+      - The region was started but never stopped
+      - The region was never started but stopped
+--------------------------------------------------------------------------------
+Region colmajor, Group 1: HPC
++-------------------+------------+
+|    Region Info    | HWThread 2 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.179456 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 2 |
++------------------------------------------+---------+------------+
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |   16777220 |
+|        MEM_INST_RETIRED_ALL_LOADS        |   PMC2  |  151017500 |
+|        MEM_INST_RETIRED_ALL_STORES       |   PMC3  |   33563620 |
 +------------------------------------------+---------+------------+
 
 +------------------------------+------------+
