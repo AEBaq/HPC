@@ -1,4 +1,3 @@
-```bash
 SHORT HPC Lab02
 
 EVENTSET
@@ -31,4 +30,3 @@ Groupe de performance pour analyse Roofline (Lab 02)
 Mesure FP DP scalaire et vectoriel (SSE 128-bit)
 Accès mémoire architecturaux (loads/stores comptés)
 Intensité arithmétique, performance et bande passante effective
-```
