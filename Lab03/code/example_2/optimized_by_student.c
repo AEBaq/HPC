@@ -22,3 +22,15 @@
  * 1.0    31.03.2026  AEBaq        First version of opitmized code by student
  *
 *****************************************************************************************/
+
+void strength_reduction() {
+  int array[100];
+  int n = 100, i;
+  for (i = 0; i < n; i++) {
+      array[i] = i >> 3;
+  }
+}
+
+void main() {
+  strength_reduction();
+}
