@@ -22,3 +22,22 @@
  * 1.0    31.03.2026  AEBaq        First version of not opitmized code
  *
 *****************************************************************************************/
+
+#include <stdio.h>
+
+void constant_expression_inside_loop() {
+    int i;
+    int result = 1;
+    int multiplier = 5;
+
+    for (i = 0; i < 10; i++) {
+        result = result * multiplier; // Multiplication inside the loop
+    }
+
+    printf("Result: %d\n", result);
+}
+
+int main() {
+    constant_expression_inside_loop();
+    return 0;
+}
