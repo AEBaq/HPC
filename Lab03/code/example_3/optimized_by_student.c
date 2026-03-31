@@ -22,3 +22,15 @@
  * 1.0    31.03.2026  AEBaq        First version of opitmized code by student
  *
 *****************************************************************************************/
+
+int dead_code_eliminiated(int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += i;
+    }
+    return sum;
+}
+
+void main() {
+  printf("sum = %d\n", dead_code_eliminated(100));
+}
