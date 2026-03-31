@@ -22,11 +22,11 @@ Cet exemple permet de démontrer l'élimination des variables inutilisées ou ja
 
 ## Résultats
 
-| Optimisation | Sans optimisation | Avec -O3 |
+| Optimisation | Sans optimisation (-O0) | Avec -O3 |
 |---|---|---|
-| Loop Optimization | Calcul répété n fois | Calcul effectué 1 fois |
-| Strength Reduction | Division (`/`) à chaque itération | Décalage de bit (`>>`) à chaque itération |
-| Dead Code Elimination | Variables mortes conservées | Variables mortes éliminées |
+| Loop Optimization | [Calcul répété n fois](https://godbolt.org/z/qKx14debM) | [Calcul effectué 1 fois](https://godbolt.org/z/abs641bfj) |
+| Strength Reduction | [Division (`/`) à chaque itération](https://godbolt.org/z/WMYWP4zdE) | [Décalage de bit (`>>`) à chaque itération](https://godbolt.org/z/7Ton6qM64) |
+| Dead Code Elimination | [Variables mortes conservées](https://godbolt.org/z/r5qecKE5e) | [Variables mortes éliminées](https://godbolt.org/z/qxGKTKadP) |
 
 ## Analyse
 
@@ -35,8 +35,8 @@ Selon le cours, le compilateur doit satisfaire plusieurs contraintes :
 - **Analyse statique uniquement :** Les optimisations reposent sur une analyse statique, sans information d'exécution.
 - **Conservatisme :** En cas de doute, le compilateur refuse l'optimisation pour éviter les effets secondaires.
 
-1. **Loop Invariant Code Motion** : Cette optimisation est couramment effectuée par le compilateur à partir de `-O2`. Elle réduit significativement les calculs redondants dans les boucles.
+1. **Loop Optimization** : Cette optimisation est couramment effectuée par le compilateur. Elle réduit significativement les calculs redondants dans les boucles.
 
 2. **Strength Reduction** : Les compilateurs modernes remplacent automatiquement les divisions par des puissances de 2 par des décalages de bits, ce qui accélère l'exécution.
 
-3. **Dead Code Elimination** : Le compilateur élimine les variables jamais lues et les assignations mortes, réduisant la taille du binaire et la consommation mémoire.
+3. **Dead Code Elimination** : Le compilateur élimine les variables jamais lues et les assignations mortes, réduisant la taille du binaire et la consommation mémoire. Dans notre exemple, on constate que l'assembleur est beaucoup plus long que la version non optimisée, ce qui n'est pas vraiment le résultat attendu...
