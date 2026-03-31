@@ -23,7 +23,7 @@
  *
 *****************************************************************************************/
 
-void strenght_not_reduced() {
+void strength_not_reduced() {
   int array[100];
   int n = 100, i;
   for (i = 0; i < n; i++) {
