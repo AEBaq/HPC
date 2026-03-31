@@ -21,8 +21,9 @@ Cet exemple permet de montrer comment remplacer une opération coûteuse par une
 Cet exemple permet de démontrer l'élimination des variables inutilisées ou jamais lues. Le compilateur va analyser et supprimer les variables inutiles afin d'éviter les calculs inutiles.
 
 ## Résultats
+Ces résultats ont été obtenus en utilisant la version du code non optimisée.
 
-| Optimisation | Sans optimisation (-O0) | Avec -O3 |
+| Optimisation | Sans optimisation (-O0) | Avec optimisation (-O3) |
 |---|---|---|
 | Loop Optimization | [Calcul répété n fois](https://godbolt.org/z/qKx14debM) | [Calcul effectué 1 fois](https://godbolt.org/z/abs641bfj) |
 | Strength Reduction | [Division (`/`) à chaque itération](https://godbolt.org/z/WMYWP4zdE) | [Décalage de bit (`>>`) à chaque itération](https://godbolt.org/z/7Ton6qM64) |
