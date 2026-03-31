@@ -22,3 +22,15 @@
  * 1.0    31.03.2026  AEBaq        First version of not opitmized code
  *
 *****************************************************************************************/
+
+void strenght_not_reduced() {
+  int array[100];
+  int n = 100, i;
+  for (i = 0; i < n; i++) {
+      array[i] = i / 8;
+  }
+}
+
+void main(){
+  strength_not_reduced();
+}
