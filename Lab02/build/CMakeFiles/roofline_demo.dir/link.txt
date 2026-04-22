@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/roofline_demo.dir/link.d CMakeFiles/roofline_demo.dir/main.c.o CMakeFiles/roofline_demo.dir/src/roofline_demo.c.o -o roofline_demo  -llikwid

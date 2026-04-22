@@ -6,15 +6,11 @@
 >NOTE : Pour ce laboratoire, la mise en page du rapport a été modifié par rapport à celle demandé dans les consignes de laboratoire afin de faciliter l'étude de chacun des cas.
 
 ## Caractéristique Machine
-Suite à divers tentatives de mise en place de likwid et heures passées à tester divers approche, j'ai finalement dû de venir travailler sur les ordinateurs de l'école possédant une architecture Intel Core i5-14500 (Alder Lake).
+Suite à divers tentatives de mise en place de likwid et heures passées à tester divers approche sans réussir, j'ai finalement dû venir travailler sur les ordinateurs de l'école. Ainsi, le travail a été effectué sur une architecture Intel Core i5-14500 (Alder Lake).
 
-Voici les caractéristiques matérielles trouvées grâce à la commande `likwid-topology`: 
+Voici les caractéristiques matérielles qui nous intéressent trouvées grâce à la commande `likwid-topology`: 
 * CPU : Intel Core i5-14500 (14 cores, 20 threads)
 * Cache L1 : 48 kB par core
-* Cache L2 : 1.25 MB par core
-* Cache L3 : 24 MB partagé
-* Mode d'exécution : mono-thread
-* Précision : double precision (float64)
 
 ## Plafond roofline
 
@@ -30,15 +26,20 @@ Nous indiquant que pour :
 * AI > 0.481 : performance limitée par la capcité de calcul
 
 Pour les futures analyses, les formules suivantes vont être utilisées pour trouver les valeures intéressantes : 
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1)$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8$$
-* $$AI = FLOPs / DRAM\_Bytes$$
-* $$Perf = (FLOPs / Runtime) [FLOP/s]$$
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1)$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8$
+* $AI = FLOPs / DRAM\_Bytes$
+* $Perf = (FLOPs / Runtime) [FLOP/s]$
+
+
+## Roofline
+Voici le graphique roofline mentionné dans les prochaines analyses
+![graphe](Figure_1.png)
 
 ## Cas 1 : `HPC_STREAM`
 
 ### Analyse théorique
-En se basant sur les commentaires du code, on a un AI qui vaut $AI = 3 FLOPs / 16 octets = 0.1875 FLOPs/octets$
+En se basant sur les commentaires du code, on a un AI qui vaut $AI = 3 [FLOPs] / 16 [octets] = 0.1875 [FLOPs/octets]$
 
 ### Mesures `LIKWID`
 Voici la commande utilisée : `likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_stream 50000000`
@@ -66,20 +67,19 @@ Region hpc_stream, Group 1: HPC
 ### Analyse
 
 A partir des mesures `Likwid`, nous pouvons calculer les mesures suivantes : 
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (150000000 * 1) = 150000000 [FLOP]$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8 = (650002100 + 200001000) * 8 = 6800 [MB]$$
-* $$AI = FLOPs / DRAM\_Bytes = 150000000 / 6800 [MB] = 0.0221 [FLOP/Byte]$$
-* $$Perf = (FLOPs / Runtime) [FLOP/s] = 150000000 / 0.084135 = 1'782'848'993 [FLOP/s] = 1'782 [MFLOP/s]$$
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (150000000 * 1) = 150000000 [FLOP]$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8 = (650002100 + 200001000) * 8 = 6800 [MB]$
+* $AI = FLOPs / DRAM\_Bytes = 150000000 / 6800 [MB] = 0.0221 [FLOP/Byte]$
+* $Perf = (FLOPs / Runtime) [FLOP/s] = 150000000 / 0.084135 = 1'782'848'993 [FLOP/s] = 1'782 [MFLOP/s]$
 
 Grâce à ces valeurs, on constate que l'intensité arithmétique mesurée est inférieur à l'estimation théorique. Le point se situant au-dessus de la courbe théorique, on confirme que la bande passante réelle est meilleure que prévue.
 
-### Proposition amélioration
 
 ## Cas 2 : `HPC_COMPUTE`
 
 ### Analyse théorique
 
-En se basant sur le code, on effectue 200 itérations. Ainsi, en remplaçant cette valeur dans la formule donnée, on obtient un AI qui vaut $AI = 3 + (6 * 200 + 1) FLOPs / 16 octets = 1024 / 16 = 64 [FLOPs/octets]$
+En se basant sur le code, on effectue 200 itérations. Ainsi, en remplaçant cette valeur dans la formule donnée, on obtient un AI qui vaut $AI = 3 + (6 * 200 + 1) [FLOPs] / 16 [octets] = 1024 / 16 = 64 [FLOPs/octets]$
 
 ### Mesures `LIKWID`
 Voici la commande utilisée : `likwid-perfctr -C 2 -g HPC -m ./roofline_demo hpc_compute 20000000 200`
@@ -105,19 +105,17 @@ Region hpc_compute, Group 1: HPC
 ``` 
 ### Analyse
 A partir des mesures `Likwid`, nous pouvons calculer les mesures suivantes :
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (24080000000 * 1) = 24080000000 [FLOP]$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8 = (48500010000 + 16280000000) * 8 = 518240000 [Bytes] = 518240 [MB]$$
-* $$AI = FLOPs / DRAM\_Bytes = 24080000000 / 518240000000 = 0.0465 [FLOP/Byte]$$
-* $$Perf = (FLOPs / Runtime) [FLOP/s] = 24080000000 / 28.545460 = 843'350'000 [FLOP/s] = 843 [MFLOP/s]$$
-
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (24080000000 * 1) = 24080000000 [FLOP]$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8 = (48500010000 + 16280000000) * 8 = 518240000 [Bytes] = 518240 [MB]$
+* $AI = FLOPs / DRAM\_Bytes = 24080000000 / 518240000000 = 0.0465 [FLOP/Byte]$
+* $Perf = (FLOPs / Runtime) [FLOP/s] = 24080000000 / 28.545460 = 843'350'000 [FLOP/s] = 843 [MFLOP/s]$
 
 L'intensité arithmétique mesurée est très inférieure à l'estimation théorique. Le calcul réel effectue beaucoup plus d'accès mémoire que prévu, restant limité par la bande passante. Le point se situe également au-dessus de la courbe théorique, suggérant que la bande passante réelle est meilleure que le modèle idéal. 
-### Proposition amélioration
 
 ## Cas 3 : `HPC_STRIDE`
 
 ### Analyse théorique
-En se basant sur les commentaires du code, on a un AI qui vaut $AI = 3 FLOPs / 16 octets = 0.1875 FLOPs/octet$. On constate que le nombre de stride n'impacte pas l'AI.
+En se basant sur les commentaires du code, on a un AI qui vaut $AI = 3 [FLOPs] / 16 [octets] = 0.1875 [FLOPs/octet]$. On constate que le nombre de stride n'impacte pas l'AI.
 
 ### Mesures `LIKWID`
 
@@ -193,9 +191,9 @@ Region hpc_stride, Group 1: HPC
 ```
 ### Analyse
 Pour tous les cas de stride, les calculs suivants montrent une AI constante :
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1) = 150000000 [FLOP]$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8 = 8400000000 [Bytes] \approx 8400 [MB]$$
-* $$AI = 150000000 / 8400000000 = 0.0179 [FLOP/Byte]$$
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1) = 150000000 [FLOP]$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8 = 8400000000 [Bytes] \approx 8400 [MB]$
+* $AI = 150000000 / 8400000000 = 0.0179 [FLOP/Byte]$
 
 En revanche, les performances mesurées varient considérablement selon le stride :
 * Stride 2 : $Perf = 150000000 / 0.114608 = 1'308'000'000 [FLOP/s] = 1308 [MFLOP/s]$
@@ -203,12 +201,11 @@ En revanche, les performances mesurées varient considérablement selon le strid
 * Stride 64 : $Perf = 150000000 / 0.678691 = 221'000'000 [FLOP/s] = 221 [MFLOP/s]$
 
 On constate ainsi que même avec une intensité arithmétique identique, les performances chutent quand le stride augmente, on peut donc en conclure que l’intensité arithmétique ne suffit pas à prédire les performances réelles
-### Proposition amélioration
 
 ## Cas 4 : `ROW` vs `COL`
 
 ### Analyse théorique
-En se basant sur les commentaires du code des deux cas, on a un AI qui vaut $AI = (N * N) FLOPs / (N * N)*8 octets = 1/8 = 0.125 FLOPs/octet$
+En se basant sur les commentaires du code des deux cas, on a un AI qui vaut $AI = (N * N) [FLOPs] / (N * N)*8 [octets] = 1/8 = 0.125 [FLOPs/octet]$
 
 En revanche, en row-major, les accès au sein d'une boucle interne sont séquentiels en mémoire, exploitant bien le cache et le prefetching. En col-major, les accès sautent entre les lignes de la matrice stockée en mémoire contiguë, déteriorant l'utilisation du prefetching. On aura donc une différence dans les performances malgré un AI similaire dû au accès mémoire supplémentaire demandé pour col-major.
 
@@ -263,17 +260,15 @@ Region colmajor, Group 1: HPC
 ### Analyse
 
 Pour le cas row-major :
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (16777220 * 1) = 16777220 [FLOP]$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8 = (134248400 + 33567710) * 8 = 1341280 [Bytes] = 1341 [MB]$$
-* $$AI = FLOPs / DRAM\_Bytes = 16777220 / 1341280000 = 12.51 [FLOP/Byte]$$
-* $$Perf = (FLOPs / Runtime) [FLOP/s] = 16777220 / 0.027359 = 613'297'000 [FLOP/s] = 613 [MFLOP/s]$$
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1) = (0 * 2) + (16777220 * 1) = 16777220 [FLOP]$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8 = (134248400 + 33567710) * 8 = 1341280 [Bytes] = 1341 [MB]$
+* $AI = FLOPs / DRAM\_Bytes = 16777220 / 1341280000 = 12.51 [FLOP/Byte]$
+* $Perf = (FLOPs / Runtime) [FLOP/s] = 16777220 / 0.027359 = 613'297'000 [FLOP/s] = 613 [MFLOP/s]$
 
 Pour le cas col-major :
-* $$FLOPs = (PMC0 * 2) + (PMC1 * 1) = 16777220 [FLOP]$$
-* $$DRAM\_Bytes = (PMC2 + PMC3) * 8 = (151017500 + 33563620) * 8 = 1481384 [Bytes] = 1481 [MB]$$
-* $$AI = FLOPs / DRAM\_Bytes = 16777220 / 1481384000 = 11.33 [FLOP/Byte]$$
-* $$Perf = (FLOPs / Runtime) [FLOP/s] = 16777220 / 0.179456 = 93'500'000 [FLOP/s] = 93.5 [MFLOP/s]$$
+* $FLOPs = (PMC0 * 2) + (PMC1 * 1) = 16777220 [FLOP]$
+* $DRAM\_Bytes = (PMC2 + PMC3) * 8 = (151017500 + 33563620) * 8 = 1481384 [Bytes] = 1481 [MB]$
+* $AI = FLOPs / DRAM\_Bytes = 16777220 / 1481384000 = 11.33 [FLOP/Byte]$
+* $Perf = (FLOPs / Runtime) [FLOP/s] = 16777220 / 0.179456 = 93'500'000 [FLOP/s] = 93.5 [MFLOP/s]$
 
-Les AIs des deux cas sont presque similaire, allant donc dans la direction de l'analyse théorique. Cependant, la performance varie drastiquement comme attendu... en terme de perdormance, row-major atteint 613 [MFLOP/s] tandis que col-major ne fait que 93.5 [MFLOP/s]. Le point col-major se situe bien en-dessous de la courbe théorique, indiquant que le système n'atteint pas la bande passante maximale en raison de la mauvaise localité mémoire et des nombreux cache misses. Cet exemple montre bien que la façon dont sont stocké les données en mémoire et la façon dont nous utilisons les boucles sont tout aussi important pour la performance que l'intensité arithmétique.
-
-### Proposition amélioration
+Les AIs des deux cas sont presque similaire, allant donc dans la direction de l'analyse théorique. Cependant, la performance varie drastiquement comme attendu... en terme de perdormance, row-major atteint 613 [MFLOP/s] tandis que col-major ne fait que 93.5 [MFLOP/s]. Le point col-major se situe bien en-dessous de la courbe théorique, indiquant que le système n'atteint pas la bande passante maximale en raison de la mauvaise localisation mémoire et des nombreux cache misses. Cet exemple montre bien que la façon dont sont stocké les données en mémoire et la façon dont nous utilisons les boucles sont tout aussi important pour la performance que l'intensité arithmétique.
