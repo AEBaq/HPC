@@ -90,17 +90,16 @@ void process_samples(const Sample *a, size_t n, int *energy, int *score) {
 }
 
 void process_samples_simd(const SoA_Sample *a, size_t n, int *energy, int *score){
-    /* Process 8 samples at a time with AVX2 */
     size_t i = 0;
 
     for (; i + 7 < n; i += 8) {
-        /* Load 8 values from each array */
+        // Load value for each array)
         __m256i vx = _mm256_loadu_si256((const __m256i *)&a->x[i]);
         __m256i vy = _mm256_loadu_si256((const __m256i *)&a->y[i]);
         __m256i vz = _mm256_loadu_si256((const __m256i *)&a->z[i]);
         __m256i vb = _mm256_loadu_si256((const __m256i *)&a->bias[i]);
 
-        /* Compute energy = x*x + y*y + z*z */
+        // COmpute energy
         __m256i vx2 = _mm256_mullo_epi32(vx, vx);
         __m256i vy2 = _mm256_mullo_epi32(vy, vy);
         __m256i vz2 = _mm256_mullo_epi32(vz, vz);
@@ -108,10 +107,10 @@ void process_samples_simd(const SoA_Sample *a, size_t n, int *energy, int *score
         __m256i ve = _mm256_add_epi32(vx2, vy2);
         ve = _mm256_add_epi32(ve, vz2);
 
-        /* Store energy */
+        // Sotre energy
         _mm256_storeu_si256((__m256i *)&energy[i], ve);
 
-        /* Compute score = (x + y - z)*3 + bias*5 */
+        // Compute score
         __m256i vsum = _mm256_add_epi32(vx, vy);
         vsum = _mm256_sub_epi32(vsum, vz);
 
@@ -122,17 +121,16 @@ void process_samples_simd(const SoA_Sample *a, size_t n, int *energy, int *score
         __m256i vb5 = _mm256_mullo_epi32(vb, v5);
         vs = _mm256_add_epi32(vs, vb5);
 
-        /* Clamp manually for each element */
+        // Manual clamp
         int *score_ptr = (int *)&vs;
         for (int j = 0; j < 8; ++j) {
             score_ptr[j] = clamp_int(score_ptr[j], -1000, 1000);
         }
 
-        /* Store score */
+        // Sotre score
         _mm256_storeu_si256((__m256i *)&score[i], vs);
     }
 
-    /* Handle remaining samples */
     for (; i < n; ++i) {
         int x = a->x[i];
         int y = a->y[i];

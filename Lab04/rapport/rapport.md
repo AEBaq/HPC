@@ -1,130 +1,82 @@
-Malgré peu d'échantillons, tu vois clairement :
-
-Résultat -O3 (le plus révélateur)
-Code
-50.00 │       unpcklps %xmm0,%xmm1
-      │       unpckhps %xmm0,%xmm2
-
-Instructions SIMD visibles : unpcklps, unpckhps = opérations de shuffle/interleave sur registres xmm (128 bits = 4 floats SSE)
-
-Vectorisation confirmée : le compilateur a bien vectorisé la boucle
-
-PRocesseur cible
-gcc -march=native -Q --help=target | grep march
-  -march=                     		bdver4
-
-Labo fait sur la vm du reds donc résultat suivant pour l'architecture : 
- bdver4 = AMD Bulldozer gen 4 (très ancien 2013)
-
-Supporte AVX (256 bits) mais performance médiocre
-C'est pourquoi tu vois surtout xmm (128 bits) même avec -march=native
-
 # HPC, Laboratoire n°4 : SIMD
 **Élève : Emily Baquerizo**
 
-### Baseline : Exécution sans optimisation (-O0)
-L'exécution du programme sans optimisation du compilateur établit une ligne de base pour les comparaisons ultérieures. Le programme s'exécute en environ 14 à 16 millisecondes pour 1000 points sur 10000 itérations. L'analyse avec perf révèle que les cycles d'exécution sont dominés par les opérations de chargement du système d'exploitation (ld-linux-x86-64.so.2, handle_amd) et l'initialisation des fonctionnalités CPU, ce qui masque la véritable charge de travail du programme.
+## Auto-vectorisation et organisation des données
 
-L'inspection du code assembleur généré confirme l'absence totale d'instructions SIMD. Le compilateur génère des instructions scalaires standard, traitant un seul élément (position ou vélocité) par itération de boucle. Cette approche naïve constitue donc notre point de référence pour mesurer les gains de performance apportés par les optimisations suivantes.
+### Première étape – Prise en main
 
-### Optimisation niveau 2 (-O2)
-L'activation de l'optimisation -O2 produit une amélioration spectaculaire et immédiate. Le temps d'exécution chute à 0 ms selon le chronomètre du programme (ou devient trop court pour être mesuré précisément), représentant un gain de performance supérieur à 14x. Cette accélération dramatique résulte de l'activation de la vectorisation automatique par le compilateur.
+En exécutant le programme `simd_demo` avec 1000 points et 10000 itérations sans optimisation (`-O0`), j'ai obtenu environ 12-16 ms. C'est ma baseline pour le reste des manipulations. En regardant le code assembleur, on ne voit que des opérations scalaires, pas d'instructions SIMD du tout comme attendue
 
-L'analyse du code assembleur avec perf annotate révèle l'apparition d'instructions SIMD utilisant les registres xmm, qui sont des registres 128 bits. Chaque registre xmm peut contenir 4 valeurs flottantes 32 bits (float), permettant au compilateur de traiter 4 éléments en parallèle par itération au lieu d'un seul. Les instructions observées incluent unpcklps et unpckhps, qui sont des opérations de rearrangement (shuffle) des données.
+### Seconde étape – Optimisation par le compilateur
 
-Cependant, la présence de ces opérations de shuffle révèle une limitation importante : le layout des données en mémoire (Array of Structures) force le compilateur à charger des vecteurs contenant alternativement des positions et des vélocités, puis à les séparer via ces opérations coûteuses avant de pouvoir effectuer les calculs vectorisés. Cette inefficacité, bien que masquée par le gain de la vectorisation 4x, constitue un goulot d'étranglement.
+#### Optimisation niveau 2 (`-O2`)
 
-### Optimisation niveau 3 (-O3)
-Le passage à l'optimisation -O3 ne produit aucune amélioration visible en termes de temps d'exécution. Le code reste aussi rapide que la version -O2, restant à 0 ms. L'analyse du code assembleur montre que les instructions SIMD restent identiques : les mêmes registres xmm sont utilisés avec les mêmes opérations de shuffle.
+Avec `-O2`, le temps devient pratiquement 0 ms (temps trop petit pour avoir des mesures précises). En regardant le code assembleur, j'ai pu observer des instructions `xmm` (128 bits) et surtout des opérations `unpcklps` et `unpckhps` qui sont des shuffle/rearrangement de données.
 
-Cette absence de gain supplémentaire illustre une réalité importante : les optimisations agressives de -O3 (comme le déroulement de boucles et les réorganisations de code) ne peuvent pas compenser fondamentalement une mauvaise organisation des données. Le compilateur ne peut pas modifier la logique du code pour convertir le layout AoS en SoA ; il est limité par la structure des données fournie par le programmeur. Les optimisations -O3 tentent d'améliorer le code existant, mais face à une organisation inefficace, leur impact reste marginal.
+On voit que le compilateur a vectorisé la boucle, mais il doit faire du travail supplémentaire pour réorganiser les données. C'est parce que la structure en mémoire est entrelacée : `[position][velocity][position][velocity]...`. Donc quand le compilateur charge 4 floats à la fois, il obtient 2 positions et 2 velocités mélangées, et il doit les séparer
 
-## Partie 2 : Optimisation de l'organisation des données
+#### Optimisation niveau 3 (`-O3`)
 
-### 5.1 Paramètres de la machine
+Avec `-O3`, on reste à 0 ms (identique à `-O2`). En regardant le code assembleur, c'est presque la même chose qu'avant. `-O3` active des optimisations plus agressives comme le déroulement de boucles, mais ça ne change pas grand chose dasn notre cas. C'est parce que le vrai problème, c'est l'organisation des données, pas le compilateur...
 
-L'analyse des caches de la machine révèle :
-- L1 Data Cache : 64 KiB par core
-- L1 Instruction Cache : 64 KiB par core  
-- L2 Cache : 2 MiB par core
-- L3 Cache : 128 MiB
+#### Optimisation pour processeur cible (`-O3 -march=native`)
 
-Avec une taille de 64 KiB pour L1d et 8 bytes par point (2 floats × 4 bytes),
-le cache peut théoriquement contenir 8192 points complets. En réservant environ
-50% d'espace libre pour le code et autres données, nous fixons le BLOCK_SIZE
-à 4096 points, offrant un bon compromis entre localité spatiale et efficacité
-de vectorisation.
+Quand j'ai ajouté `-march=native`, le compilateur a détecté qu'on utilise un processeur bdver4 (AMD Bulldozer 2013, correspondant à celui de la VM REDS). Selon la donnée, je devais voir des registres `ymm` (256 bits) apparaître, mais je ne les ai pas observé. Le compilateur reste sur les registres `xmm`...
 
-### 5.2 Conversion en Structure of Arrays (SoA)
+### Optimisation du code
 
-Nous avons converti la structure AoS originale en SoA pure, utilisant des
-pointeurs séparés pour positions et vélocités. Cette approche élimine l'entrelacement
-des données en mémoire, permettant des chargements SIMD continus sans opérations
-de shuffle supplémentaires.
+#### Problème du layout Array of Structures
 
-Résultat observé : L'exécution reste identiquement rapide (0ms), comme le code
-AoS optimisé. Cette absence de différence observable s'explique par le fait que
-la charge de travail (1000 points × 10000 itérations) est trop rapide pour être
-mesurée avec précision. Cependant, l'analyse perf montre toujours une concentration
-importante dans les fonctions de chargement du système d'exploitation (handle_amd,
-init_cpu_features), masquant les mesures précises de la boucle de calcul.
+La structure originale est :
 
-### 5.3 Approche Hybrid (AoS + SoA + Alignement cache)
+```c
+typedef struct {
+    float position;
+    float velocity;
+} Point;
+```
 
-L'approche hybrid combine les avantages des deux méthodes en créant des blocs
-de 4096 points, alignés à 64 bytes selon les recommandations pour la localité
-cache L1. Chaque bloc contient deux tableaux continus (positions et vélocités).
+Ça signifie que si on a 4 points en mémoire, c'est `[pos1][vel1][pos2][vel2][pos3][vel3][pos4][vel4]`. Quand on veut faire `position += velocity * DELTA`, on doit charger ces données entrelacées, puis faire des shuffle pour les séparer. C'est du travail en plus qui ralentit toute l'exéécution
 
-Configuration :
-- ALIGNMENT : 64 bytes
-- BLOCK_SIZE : 4096 points
-- Allocation : posix_memalign pour alignement cache
+#### Aggraver le cas
 
-Résultat observé : Similaire aux versions précédentes, le temps reste 0ms affiché.
-La raison demeure la même : le programme est trop rapide pour les paramètres
-standards de perf record (4 kHz de fréquence d'échantillonnage).
+Si la structure était :
 
-### 5.4 Interprétation des résultats perf
+```c
+typedef struct {
+    float position;
+    float velocity;
+    float otherNoisyValues[16];
+} Point;
+```
 
-L'exécution perf record capture 6 samples seulement, principalement dans :
-- 33.33% : handle_amd (détection des features CPU)
-- 33.33% : init_cpu_features.constprop.0 (initialisation)
-- 16.67% : main (calcul réel)
-- 16.67% : kernel (interruptions système)
+Ce serait encore pire parce qu'on chargerait beaucoup plus de données par point. Le cache L1 ne pourrait contenir que très peu de points complets, et on aurait les mêmes problèmes de shuffle mais avec encore plus de données inutiles à charger.
 
-Cette distribution confirme que le temps dominant n'est pas dans la boucle de
-calcul elle-même, mais dans les phases de démarrage et d'initialisation. Pour
-obtenir des mesures perf fiables de la boucle de calcul, une charge de travail
-significativement plus importante serait nécessaire (au moins 100-500ms d'exécution).
+#### Structure of Arrays (SoA)
 
-### 5.5 Conclusion sur l'optimisation des données
+Avec la structure :
 
-Malgré l'impossibilité de mesurer des différences de performance avec la charge
-actuelle, l'analyse théorique et l'inspection du code assembleur confirment que :
+```c
+typedef struct {
+    float *position;
+    float *velocity;
+} Point;
+```
 
-1. **SoA pur élimine les opérations shuffle** : En séparant positions et vélocités,
-   le compilateur peut générer des instructions SIMD plus efficaces.
+Là les données sont `[pos1][pos2][pos3]...` + `[vel1][vel2][vel3]...`. Quand on charge, on obtient 4 positions d'un coup, puis 4 velocités d'un coup, sans avoir besoin de shuffle ce qui rend la chose plus efficace.
 
-2. **L'approche hybrid offre un compromis** : Elle combine la contiguïté des données
-   (favorable à SIMD) avec la localité spatiale (favorable aux caches), tout en
-   simplifiant la gestion mémoire par rapport à SoA pur.
+Avec 1000 points, je n'ai pas vu une grosse différence en timing (environ 4 ms), mais je pense surtout que c'est dû à la charge étant trop petite. Ce qui est plus intéressant à observer est que le code assembleur ne contient plus les opérations de shuffle ralentissante.
 
-3. **Les limitations observées** : La charge de test (1000 points) est suffisamment
-   petite pour que l'ensemble du travail de calcul soit négligeable devant les
-   phases d'initialisation, même avec optimisation -O3 -march=native.
+La limite de cette approche est que si le nombre de points n'est pas un multiple de 8, il faudrait traiter les derniers points un par un, ce qui ajoute du code et des branches.
 
-Le code optimisé produit bien les mêmes résultats que le baseline, confirmant
-que les modifications n'ont pas introduit d'erreurs logiques. Les transformations
-structurelles (AoS → SoA → Hybrid) sont donc validées, même si les gains de
-performance ne peuvent être quantifiés précisément dans ce contexte.
+#### Approche Hybrid avec alignement cache
 
-### Tableau récapitulatif Partie 2
+Le processeur a un cache L1 de 64 KiB. Si chaque point en SoA prend 8 bytes, on peut en mettre 8192 dans le cache. Mais on ne veut pas utiliser 100% du cache, donc j'ai choisi un `BLOCK_SIZE` de 4096 points. On aligne tout à 64 bytes pour que le CPU soit content.
 
-| Aspect | AoS Baseline | SoA Pur | SoA Hybrid |
-|--------|-------------|---------|-----------|
-| Temps d'exécution affiché | 0 ms | 0 ms | 0 ms |
-| Samples perf captés | 6 | 6 | 6 |
-| % dans main | 16.67% | [À mesurer] | [À mesurer] |
-| Opérations shuffle observées | OUI | [À vérifier] | [À vérifier] |
-| Registres SIMD | xmm | [À noter] | [À noter] |
-| Conclusion | Baseline | Élimine shuffle | Cache L1 optimisé |
+### Démarche et choix d'optimisation
+
+Une nouvelle structure `SoA_Sample` a été crée avec 4 pointeurs séparés et `init_samples()` a été modifié pour allouer et initialiser les tableaux
+
+Pour `process_samples_simd()`, on load 8 éléments de chaque type, on effectue les calculs vectorisés (énergie et score), et on stocke les résultats. Le clamp doit être fait manuellement pour chaque élément. Les éléments restants sont traités séquentiellement.
+
+La charge a été augmentée à 30 millions de samples pour obtenir des mesures de temps fiables (300k était trop rapide, je n'obtenais que des temps "nuls"). Après comparaison, le résultat obtenu est 2.5x plus rapide par rapport à la version originale.
