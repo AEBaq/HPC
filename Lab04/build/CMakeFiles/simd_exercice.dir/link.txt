@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/simd_exercice.dir/src/exercice.c.o -o simd_exercice 

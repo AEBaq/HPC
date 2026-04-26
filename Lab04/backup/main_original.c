@@ -4,12 +4,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ALIGNMENT 64
-#define BLOCK_SIZE 4096
-
 typedef struct {
-    float *position;
-    float *velocity;
+    float position;
+    float velocity;
 } Point;
 
 static long long now_ms(void) {
@@ -37,10 +34,8 @@ int main(int argc, char** argv)
     /* init random */
     srand((unsigned)time(NULL));
     for (size_t i = 0; i < numPoints; ++i) {
-        points[i].position = (float*)malloc(sizeof(float));
-        points[i].velocity = (float*)malloc(sizeof(float));
-        *points[i].position = (float)(rand() % 100);
-        *points[i].velocity = (float)(rand() % 1000) / 100.0f;
+        points[i].position = (float)(rand() % 100);
+        points[i].velocity = (float)(rand() % 1000) / 100.0f;
     }
 
     printf("Starting %zu update loops of %zu points...", numIters, numPoints);
@@ -52,12 +47,12 @@ int main(int argc, char** argv)
         for (size_t j = 0; j < numPoints; ++j) {
             Point* p = &points[j];
 
-            *p->position += *p->velocity * DELTA_TIME;
+            p->position += p->velocity * DELTA_TIME;
 
-            if ((*p->position < 0.f && *p->velocity < 0.f) ||
-                (*p->position > POSITION_LIMIT && *p->velocity > 0.f))
+            if ((p->position < 0.f && p->velocity < 0.f) ||
+                (p->position > POSITION_LIMIT && p->velocity > 0.f))
             {
-                *p->velocity *= -1.f;
+                p->velocity *= -1.f;
             }
         }
     }
@@ -67,10 +62,6 @@ int main(int argc, char** argv)
 
     printf(" ran for %lldms\n", milliseconds);
 
-    for (size_t i = 0; i < numPoints; ++i) {
-        free(points[i].position);
-        free(points[i].velocity);
-    }
     free(points);
     return 0;
 }

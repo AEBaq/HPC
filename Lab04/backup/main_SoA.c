@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ALIGNMENT 64
-#define BLOCK_SIZE 4096
-
 typedef struct {
     float *position;
     float *velocity;
