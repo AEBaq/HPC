@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/simd_demo.dir/main.c.o -o simd_demo 
