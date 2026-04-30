@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/case4.dir/link.d CMakeFiles/case4.dir/src/case4.c.o -o case4

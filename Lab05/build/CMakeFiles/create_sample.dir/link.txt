@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/create_sample.dir/link.d "CMakeFiles/create_sample.dir/src/create-sample.c.o" -o create_sample  -lm
