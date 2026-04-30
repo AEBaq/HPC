@@ -13,7 +13,11 @@ add_executable(simd_exercice
 )
 
 target_compile_options(simd_demo PRIVATE
+<<<<<<< Updated upstream
     -O3 -march=native -g
+=======
+    -O2 -g
+>>>>>>> Stashed changes
 )
 
 target_compile_options(simd_exercice PRIVATE

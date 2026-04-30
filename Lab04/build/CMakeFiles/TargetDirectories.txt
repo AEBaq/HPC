@@ -1,4 +1,11 @@
+<<<<<<< Updated upstream
 /home/reds/HPC/HPC/Lab04/build/CMakeFiles/simd_demo.dir
 /home/reds/HPC/HPC/Lab04/build/CMakeFiles/simd_exercice.dir
 /home/reds/HPC/HPC/Lab04/build/CMakeFiles/edit_cache.dir
 /home/reds/HPC/HPC/Lab04/build/CMakeFiles/rebuild_cache.dir
+=======
+/home/nox/Documents/Cours/BA8/HPC/Labo/HPC/Lab04/build/CMakeFiles/simd_demo.dir
+/home/nox/Documents/Cours/BA8/HPC/Labo/HPC/Lab04/build/CMakeFiles/simd_exercice.dir
+/home/nox/Documents/Cours/BA8/HPC/Labo/HPC/Lab04/build/CMakeFiles/edit_cache.dir
+/home/nox/Documents/Cours/BA8/HPC/Labo/HPC/Lab04/build/CMakeFiles/rebuild_cache.dir
+>>>>>>> Stashed changes

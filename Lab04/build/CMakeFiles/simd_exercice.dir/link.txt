@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 /usr/bin/cc CMakeFiles/simd_exercice.dir/src/exercice.c.o -o simd_exercice 
+=======
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/simd_exercice.dir/link.d CMakeFiles/simd_exercice.dir/src/exercice.c.o -o simd_exercice
+>>>>>>> Stashed changes

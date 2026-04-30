@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 /usr/bin/cc CMakeFiles/simd_demo.dir/main.c.o -o simd_demo 
+=======
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/simd_demo.dir/link.d CMakeFiles/simd_demo.dir/main.c.o -o simd_demo
+>>>>>>> Stashed changes

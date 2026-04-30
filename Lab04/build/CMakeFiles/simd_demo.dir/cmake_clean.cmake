@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+<<<<<<< Updated upstream
+=======
+  "CMakeFiles/simd_demo.dir/link.d"
+>>>>>>> Stashed changes
   "CMakeFiles/simd_demo.dir/main.c.o"
   "CMakeFiles/simd_demo.dir/main.c.o.d"
   "simd_demo"
