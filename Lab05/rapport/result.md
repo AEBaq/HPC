@@ -130,50 +130,68 @@ $ perf report
 Après compilation, j'ai bel et bien le fichier `build/create_sample` mais je n'ai pas le fichier `build/application`. Après vérification du CMakeList.txt, `application` n'est pas présent dans les fichiers résultants, j'ai donc fait sans.
 
 ```sh
-  @nox  perf stat ./create_sample
-usage: create-sample <amount>
+$ perf stat ./create_sample 10000                                
+Created 10000 measurements in 3.949000 ms
 
- Performance counter stats for './create_sample':
+ Performance counter stats for './create_sample 10000':
 
                  0      context-switches:u               #      0.0 cs/sec  cs_per_second     
                  0      cpu-migrations:u                 #      0.0 migrations/sec  migrations_per_second
-                66      page-faults:u                    # 151959.9 faults/sec  page_faults_per_second
-              0.43 msec task-clock:u                     #      0.0 CPUs  CPUs_utilized       
-             2,736      branch-misses:u                  #      8.1 %  branch_miss_rate       
-            33,589      branches:u                       #     77.3 M/sec  branch_frequency   
-           355,500      cpu-cycles:u                     #      0.8 GHz  cycles_frequency     
-     <not counted>      instructions:u                   #      nan instructions  insn_per_cycle  (0.00%)
+                75      page-faults:u                    #  17101.6 faults/sec  page_faults_per_second
+              4.39 msec task-clock:u                     #      0.3 CPUs  CPUs_utilized       
+            42,758      branch-misses:u                  #      1.4 %  branch_miss_rate         (31.64%)
+         3,786,914      branches:u                       #    863.5 M/sec  branch_frequency     (44.57%)
+        11,661,539      cpu-cycles:u                     #      2.7 GHz  cycles_frequency       (67.37%)
+        25,236,013      instructions:u                   #      1.9 instructions  insn_per_cycle  (68.36%)
 
-       0.007400199 seconds time elapsed
+       0.005032272 seconds time elapsed
 
-       0.000000000 seconds user
-       0.001261000 seconds sys
-
-$ perf record -g ./create_sample
-usage: create-sample <amount>
+       0.004015000 seconds user
+       0.001012000 seconds sysct 
+$ perf record -g ./create_sample 10000                           
+Created 10000 measurements in 4.285000 ms
 [ perf record: Woken up 1 times to write data ]
-[ perf record: Captured and wrote 0.002 MB perf.data (2 samples) ]
-
+[ perf record: Captured and wrote 0.004 MB perf.data (25 samples) ]
 $ perf report
-Samples: 2  of event 'cpu/cycles/Pu', Event count (approx.): 249998                           
+Samples: 25  of event 'cpu/cycles/Pu', Event count (approx.): 11731755                        
   Children      Self  Command        Shared Object         Symbol                             
-+  100.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_start_user                 
-+  100.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_start                      
-+  100.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_sysdep_start               
-+  100.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] dl_main                        
-+   50.00%    50.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_process_pt_gnu_property    
-+   50.00%    50.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_relocate_object_no_relro   
-+   50.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_map_object_deps            
-+   50.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_catch_exception            
-+   50.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] openaux                        
-+   50.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_map_new_object             
-+   50.00%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_relocate_object 
++   90.59%     0.00%  create_sample  create_sample         [.] main                           
++   90.59%     0.00%  create_sample  libc.so.6             [.] fprintf                        
++   84.82%     0.00%  create_sample  libc.so.6             [.] __vfprintf_internal            
++   79.94%     7.30%  create_sample  libc.so.6             [.] __printf_buffer                
++   65.20%     0.00%  create_sample  libc.so.6             [.] __printf_fp_l_buffer           
++   44.02%    18.22%  create_sample  libc.so.6             [.] __printf_fp_buffer_1.isra.0    
++   15.66%    15.66%  create_sample  libc.so.6             [.] __mpn_divrem                   
++   15.66%     0.00%  create_sample  libc.so.6             [.] hack_digit                     
++   14.71%     9.30%  create_sample  libc.so.6             [.] __memmove_avx_unaligned_erms   
++    7.72%     7.72%  create_sample  libc.so.6             [.] __printf_buffer_write          
++    5.90%     5.90%  create_sample  create_sample         [.] rand_nd                        
++    5.77%     5.77%  create_sample  libc.so.6             [.] __printf_buffer_to_file_init   
++    5.77%     0.00%  create_sample  libc.so.6             [.] __printf_buffer_to_file_switch 
++    5.66%     5.66%  create_sample  libc.so.6             [.] __mpn_rshift                   
++    5.55%     5.55%  create_sample  libc.so.6             [.] __mpn_lshift                   
++    5.41%     5.41%  create_sample  libc.so.6             [.] memcpy@@GLIBC_2.14@plt         
++    5.12%     5.12%  create_sample  libc.so.6             [.] __mpn_mul_1                    
++    4.88%     4.88%  create_sample  libc.so.6             [.] __strchrnul_avx2               
++    2.13%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_start_user                 
++    2.13%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_start                      
++    2.13%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_sysdep_start               
++    2.13%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] dl_main                        
++    1.37%     1.37%  create_sample  libm.so.6             [.] __sin_fma                      
++    1.07%     1.07%  create_sample  ld-linux-x86-64.so.2  [.] rtld_mutex_dummy               
++    1.07%     1.07%  create_sample  [unknown]             [k] 0xffffffffa1801968             
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_map_object_deps            
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_catch_exception            
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] openaux                        
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_map_new_object             
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_map_object_from_fd         
++    1.07%     0.00%  create_sample  ld-linux-x86-64.so.2  [.] _dl_relocate_object            
++    1.07%     0.00%  create_sample  libc.so.6             [.] __wmemchr_ifunc
 
 ```
 
-![alt text](image-4.png)
-
-![alt text](image-5.png)
+![alt text](image-8.png)
+![alt text](image-9.png)
 
 # 5.7 Profiling
 ```sh
