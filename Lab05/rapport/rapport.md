@@ -6,8 +6,10 @@ J'ai eu des soucis lors de l'installation de Valgrind (et donc cachegrind et cal
 
 ## 5.6 Analyse
 
-## ## Analyse laboratoire 01
+## 5.7 Profiling
 
-## Amélioration possible
+### Analyse performance
 
-## Comparaison
+### Amélioration possible
+
+### Comparaison

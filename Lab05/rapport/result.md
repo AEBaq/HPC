@@ -251,6 +251,6 @@ Samples: 84  of event 'cpu/cycles/Pu', Event count (approx.): 44979092
      0.28%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_check_all_versions       
 
 $ hotspot perf.data
-![alt text](image-6.png)
-
 ```
+![alt text](image-6.png)
+![alt text](image-7.png)
