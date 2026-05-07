@@ -175,3 +175,82 @@ Samples: 2  of event 'cpu/cycles/Pu', Event count (approx.): 249998
 
 ![alt text](image-5.png)
 
+# 5.7 Profiling
+```sh
+ @nox  perf stat ./ecg_dealination ../80bpm0.csv ../out_lab06.csv
+CSV chargé avec 12 leads et 7500 échantillons.
+[ecg_analyze] threshold auto = 0.610762 (max=1.745033)
+[ecg_analyze] 22 pics R détectés, 21 RR calculés
+22 pics R détectés.
+[ecg_destroy] Contexte free
+Analyse terminée. Résultats sauvegardés dans ../out_lab06.csv
+
+ Performance counter stats for './ecg_dealination ../80bpm0.csv ../out_lab06.csv':
+
+                 0      context-switches:u               #      0.0 cs/sec  cs_per_second     
+                 0      cpu-migrations:u                 #      0.0 migrations/sec  migrations_per_second
+               341      page-faults:u                    #  23764.8 faults/sec  page_faults_per_second
+             14.35 msec task-clock:u                     #      0.4 CPUs  CPUs_utilized       
+           170,614      branch-misses:u                  #      0.8 %  branch_miss_rate         (42.85%)
+        19,464,301      branches:u                       #   1356.5 M/sec  branch_frequency     (52.43%)
+        39,436,340      cpu-cycles:u                     #      2.7 GHz  cycles_frequency       (58.19%)
+        94,802,075      instructions:u                   #      2.4 instructions  insn_per_cycle  (57.15%)
+
+       0.022179175 seconds time elapsed
+
+       0.012552000 seconds user
+       0.002877000 seconds sys
+$ perf record -g ./ecg_dealination ../80bpm0.csv ../out_lab06.csv
+CSV chargé avec 12 leads et 7500 échantillons.
+[ecg_analyze] threshold auto = 0.610762 (max=1.745033)
+[ecg_analyze] 22 pics R détectés, 21 RR calculés
+22 pics R détectés.
+[ecg_destroy] Contexte free
+Analyse terminée. Résultats sauvegardés dans ../out_lab06.csv
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.010 MB perf.data (84 samples) ]
+$ perf report
+Samples: 84  of event 'cpu/cycles/Pu', Event count (approx.): 44979092                        
+  Children      Self  Command          Shared Object         Symbol                           
++   99.44%     0.00%  ecg_dealination  ecg_dealination       [.] _start                       
++   99.44%     0.00%  ecg_dealination  libc.so.6             [.] __libc_start_main@@GLIBC_2.34
++   99.44%     0.00%  ecg_dealination  libc.so.6             [.] __libc_start_call_main       
++   99.44%     0.00%  ecg_dealination  ecg_dealination       [.] main                         
++   95.26%     2.47%  ecg_dealination  ecg_dealination       [.] read_csv                     
++   69.95%    47.18%  ecg_dealination  libc.so.6             [.] __GI_____strtod_l_internal   
++   14.78%    14.38%  ecg_dealination  libc.so.6             [.] str_to_mpn.part.0.constprop.0
++    5.25%     5.25%  ecg_dealination  libc.so.6             [.] __strlen_avx2                
++    3.96%     3.96%  ecg_dealination  libc.so.6             [.] round_and_return             
++    3.85%     3.85%  ecg_dealination  libc.so.6             [.] __mpn_mul                    
++    2.73%     2.73%  ecg_dealination  ecg_dealination       [.] skip_spaces                  
++    2.62%     1.29%  ecg_dealination  ecg_dealination       [.] ecg_analyze                  
++    2.51%     2.51%  ecg_dealination  libc.so.6             [.] 0x0000000000146e9f           
++    2.51%     0.00%  ecg_dealination  libc.so.6             [.] 0x00007faf6228feaa           
++    2.31%     1.03%  ecg_dealination  libc.so.6             [.] __errno_location             
++    2.21%     2.21%  ecg_dealination  libc.so.6             [.] __memcpy_chk@plt             
++    2.21%     0.00%  ecg_dealination  libc.so.6             [.] __memmove_chk_avx_unaligned_e
++    1.91%     1.91%  ecg_dealination  libc.so.6             [.] round_away                   
++    1.33%     1.33%  ecg_dealination  ecg_dealination       [.] ecg_highpass_ma              
++    1.33%     1.33%  ecg_dealination  libc.so.6             [.] __mpn_lshift                 
++    1.33%     1.33%  ecg_dealination  libc.so.6             [.] __memmove_avx_unaligned_erms 
++    1.33%     1.33%  ecg_dealination  [unknown]             [k] 0xffffffffa1801968           
++    1.32%     1.32%  ecg_dealination  libc.so.6             [.] __mpn_construct_double       
++    1.28%     1.28%  ecg_dealination  ecg_dealination       [.] __errno_location@plt         
++    1.25%     1.25%  ecg_dealination  ecg_dealination       [.] __ctype_b_loc@plt            
++    1.25%     0.00%  ecg_dealination  libc.so.6             [.] __ctype_b_loc                
++    1.23%     1.23%  ecg_dealination  libc.so.6             [.] __memchr_avx2                
++    0.56%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_start_user               
++    0.56%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_start                    
++    0.56%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_sysdep_start             
++    0.56%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] dl_main                      
+     0.28%     0.28%  ecg_dealination  libc.so.6             [.] _IO_getc                     
+     0.28%     0.28%  ecg_dealination  ld-linux-x86-64.so.2  [.] strncmp                      
+     0.28%     0.28%  ecg_dealination  ld-linux-x86-64.so.2  [.] __x86_cpu_features_ifunc     
+     0.28%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_receive_error            
+     0.28%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] version_check_doit           
+     0.28%     0.00%  ecg_dealination  ld-linux-x86-64.so.2  [.] _dl_check_all_versions       
+
+$ hotspot perf.data
+![alt text](image-6.png)
+
+```
