@@ -1,0 +1,1 @@
+/usr/bin/cc "CMakeFiles/k-mer-multi.dir/src/main_multi.c.o" -o k-mer-multi 

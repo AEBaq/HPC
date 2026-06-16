@@ -1,0 +1,1 @@
+/usr/bin/cc "CMakeFiles/k-mer-op.dir/src/main.c.o" -o k-mer-op 
