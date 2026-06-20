@@ -39,3 +39,12 @@ Bien que l'intention initiale de répartir le travail entre les threads était b
 
 ## Partie 2
 
+### Description des parallélisation effectuée
+
+### Stratégie de parallélisation
+
+### Justification des choix effectués
+
+#### Evalutation de l'intérêt
+
+#### Efficacité de la parallélisation
